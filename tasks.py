@@ -11,10 +11,6 @@ from seqio import FunctionDataSource, utils
 
 TaskRegistry = seqio.TaskRegistry
 
-DATASET_NAME = 'NbAiLab/NCC'
-DATASET_PARAMS = {}
-DATASET_SHAPES = {'train': 20830348, 'validation': 473079}
-
 DEFAULT_OUTPUT_FEATURES = {
     "inputs": seqio.Feature(
         vocabulary=t5.data.get_default_vocabulary(), add_eos=True,
@@ -24,8 +20,8 @@ DEFAULT_OUTPUT_FEATURES = {
 }
 
 
-def gen_dataset(split, shuffle=False, seed=None, column="text"):
-    dataset = load_dataset(DATASET_NAME, **DATASET_PARAMS)
+def gen_dataset(split, shuffle=False, seed=None, column="text", dataset_params=None):
+    dataset = load_dataset(**dataset_params)
     if shuffle:
         if seed:
             dataset = dataset.shuffle(seed=seed)
@@ -36,10 +32,10 @@ def gen_dataset(split, shuffle=False, seed=None, column="text"):
             yield item[column]
 
 
-def dataset_fn(split, shuffle_files, seed=None):
+def dataset_fn(split, shuffle_files, seed=None, dataset_params=None):
     return tf.data.Dataset.from_generator(
-        functools.partial(gen_dataset, split, shuffle_files, seed),
-        output_signature=tf.TensorSpec(shape=(), dtype=tf.string, name=DATASET_NAME)
+        functools.partial(gen_dataset, split, shuffle_files, seed, dataset_params=dataset_params),
+        output_signature=tf.TensorSpec(shape=(), dtype=tf.string, name=dataset_name)
     )
 
 
@@ -49,11 +45,45 @@ def target_to_key(x, key_map, target_key):
     return {**key_map, target_key: x}
 
 
-# ==================================== C4 ======================================
 # Final pretraining task used in Raffel et al., 2019 adaptated to NCC
+dataset_name = 'NbAiLab/NCC'
+dataset_params = {"path": dataset_name}
+dataset_shapes = {'train': 20830348, 'validation': 473079}
 TaskRegistry.add(
-    f"c4_v220_span_corruption_{DATASET_NAME.lower().replace('/', '_').replace('.', '')}",
-    source=seqio.FunctionDataSource(dataset_fn=dataset_fn, splits=("train", "validation"), caching_permitted=True, num_input_examples=DATASET_SHAPES),
+    f"c4_v220_span_corruption_{dataset_name.lower().replace('/', '_').replace('.', '')}",
+    source=seqio.FunctionDataSource(
+        dataset_fn=functools.partial(dataset_fn, dataset_params=dataset_params),
+        splits=("train", "validation"),
+        caching_permitted=True,
+        num_input_examples=dataset_shapes,
+    ),
+    preprocessors=[
+        functools.partial(
+            target_to_key, key_map={
+                "inputs": None,
+                "targets": None,
+            }, target_key="targets"),
+        seqio.preprocessors.tokenize,
+        seqio.CacheDatasetPlaceholder(),
+        preprocessors.span_corruption,
+        seqio.preprocessors.append_eos_after_trim,
+    ],
+    output_features={"targets": DEFAULT_OUTPUT_FEATURES["targets"]},
+    metric_fns=[]
+)
+
+# Final pretraining task used in Raffel et al., 2019 adaptated to nbailab_extended
+dataset_name = 'NbAiLab/nbailab_extended'
+dataset_params = {"path": dataset_name, "use_auth_token": True, "streaming": True}
+dataset_shapes = None
+TaskRegistry.add(
+    f"c4_v220_span_corruption_{dataset_name.lower().replace('/', '_').replace('.', '')}",
+    source=seqio.FunctionDataSource(
+        dataset_fn=functools.partial(dataset_fn, dataset_params=dataset_params),
+        splits=("train", "validation"),
+        caching_permitted=True,
+        num_input_examples=dataset_shapes,
+    ),
     preprocessors=[
         functools.partial(
             target_to_key, key_map={

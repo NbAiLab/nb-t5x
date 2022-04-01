@@ -100,3 +100,31 @@ TaskRegistry.add(
     output_features={"targets": DEFAULT_OUTPUT_FEATURES["targets"]},
     metric_fns=[]
 )
+
+# Final pretraining task used in Raffel et al., 2019 adaptated to NCC
+dataset_name = 'NbAiLab/NCC'
+dataset_params = {"path": dataset_name}
+dataset_shapes = {'train': 20830348, 'validation': 473079}
+vocabulary = seqio.SentencePieceVocabulary("gs://t5-data/vocabs/mc4.250000.100extra/sentencepiece.model")
+TaskRegistry.add(
+    "ncc_span_corruption_mt5",
+    source=seqio.FunctionDataSource(
+        dataset_fn=functools.partial(dataset_fn, dataset_params=dataset_params),
+        splits=("train", "validation"),
+        caching_permitted=False,
+        num_input_examples=dataset_shapes,
+    ),
+    preprocessors=[
+        functools.partial(
+            target_to_key, key_map={
+                "inputs": None,
+                "targets": None,
+            }, target_key="targets"),
+        seqio.preprocessors.tokenize,
+        # seqio.CacheDatasetPlaceholder(),
+        preprocessors.span_corruption, 
+        seqio.preprocessors.append_eos_after_trim,
+    ],
+    output_features={"targets": seqio.Feature(vocabulary=vocabulary, add_eos=True)},
+    metric_fns=[]
+)

@@ -1,9 +1,7 @@
-MODEL_DIR="gs://.../t5/mt5_base"
-TFDS_DATA_DIR="gs://.../t5/tfds"
+MODEL_DIR="gs://nb-t5/t5/mt5_base"
 
 python -m t5x.train \
   --gin_file=finetune_mt5_base.gin \
   --gin.MODEL_DIR=\"${MODEL_DIR}\" \
-  --tfds_data_dir=\"${TFDS_DATA_DIR}\" \
   --alsologtostderr
 

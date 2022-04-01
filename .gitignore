@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 t5x/
+t5x_repo/

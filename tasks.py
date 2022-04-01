@@ -18,6 +18,8 @@ DEFAULT_OUTPUT_FEATURES = {
     "targets": seqio.Feature(
         vocabulary=t5.data.get_default_vocabulary(), add_eos=True)
 }
+# Custom vocabs can also be defined and loaded
+# vocabulary = seqio.SentencePieceVocabulary("gs://t5-data/vocabs/mc4.250000.100extra/sentencepiece.model")
 
 
 def gen_dataset(split, shuffle=False, seed=None, column="text", dataset_params=None):
@@ -54,7 +56,7 @@ TaskRegistry.add(
     source=seqio.FunctionDataSource(
         dataset_fn=functools.partial(dataset_fn, dataset_params=dataset_params),
         splits=("train", "validation"),
-        caching_permitted=True,
+        caching_permitted=False,
         num_input_examples=dataset_shapes,
     ),
     preprocessors=[
@@ -64,7 +66,7 @@ TaskRegistry.add(
                 "targets": None,
             }, target_key="targets"),
         seqio.preprocessors.tokenize,
-        seqio.CacheDatasetPlaceholder(),
+        # seqio.CacheDatasetPlaceholder(),
         preprocessors.span_corruption,
         seqio.preprocessors.append_eos_after_trim,
     ],
@@ -81,7 +83,7 @@ TaskRegistry.add(
     source=seqio.FunctionDataSource(
         dataset_fn=functools.partial(dataset_fn, dataset_params=dataset_params),
         splits=("train", "validation"),
-        caching_permitted=True,
+        caching_permitted=False,
         num_input_examples=dataset_shapes,
     ),
     preprocessors=[
@@ -91,7 +93,7 @@ TaskRegistry.add(
                 "targets": None,
             }, target_key="targets"),
         seqio.preprocessors.tokenize,
-        seqio.CacheDatasetPlaceholder(),
+        # seqio.CacheDatasetPlaceholder(),
         preprocessors.span_corruption,
         seqio.preprocessors.append_eos_after_trim,
     ],

@@ -5,3 +5,7 @@
 3. Symlink `t5x_repo/t5x` to `t5x` in the cloned folder of this repo
 3. Install dependencies jax for TPU and seqio (this one from repo)
 4. Run `run.sh`
+
+Lists of checkpoints can be found:
+- https://console.cloud.google.com/storage/browser/t5-data
+- https://console.cloud.google.com/storage/browser/scenic-bucket

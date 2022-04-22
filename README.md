@@ -9,3 +9,5 @@
 Lists of checkpoints can be found:
 - https://console.cloud.google.com/storage/browser/t5-data
 - https://console.cloud.google.com/storage/browser/scenic-bucket
+
+If meeting segmentation faults when writing checkpoints to the buckets, the reasone might be `tensorstore` version `0.1.18`. As a temporal fix, try using version `0.1.14` instead.

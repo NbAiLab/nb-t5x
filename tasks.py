@@ -161,7 +161,7 @@ TaskRegistry.add(
 dataset_name = 'NbAiLab/nbailab_extended'
 dataset_params = {"path": dataset_name, "use_auth_token": True, "streaming": True}
 dataset_shapes = None
-vocabulary = seqio.SentencePieceVocabulary("gs://t5-data/vocabs/cc_all.32000.100extra/sentencepiece.model")
+vocabulary = seqio.SentencePieceVocabulary("gs://nb-t5/t5/vocabs/oscar/no_32000_bpe.sp.model", extra_ids=100)
 TaskRegistry.add(
     "extended_span_corruption_pretrain",
     source=seqio.FunctionDataSource(

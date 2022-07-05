@@ -23,14 +23,19 @@ DEFAULT_OUTPUT_FEATURES = {
 
 
 def gen_dataset(split, shuffle=False, seed=None, column="text", dataset_params=None):
+    skip = dataset_params.pop("skip", None)
     dataset = load_dataset(**dataset_params)
     if shuffle:
         if seed:
             dataset = dataset.shuffle(seed=seed)
         else:
             dataset = dataset.shuffle()
+    dataset = dataset[split]
+    if skip is not None:
+        print(f"Skipping {skip} samples...")
+        dataset = dataset.skip(skip)
     while True:
-        for item in dataset[str(split)]:
+        for item in dataset:
             yield item[column]
 
 
@@ -216,7 +221,7 @@ TaskRegistry.add(
 
 # Final pretraining task used in Raffel et al., 2019 adaptated to NCC
 dataset_name = 'NbAiLab/nbailab_extended'
-dataset_params = {"path": dataset_name, "use_auth_token": True, "streaming": True}
+dataset_params = {"path": dataset_name, "use_auth_token": True, "streaming": True, "skip": 5_000_000}
 dataset_shapes = None
 vocabulary = seqio.SentencePieceVocabulary("gs://nb-t5/t5/vocabs/wikipedia/no-da-en-sv-nn-is_32000_unigram.sp.model", extra_ids=100)
 TaskRegistry.add(

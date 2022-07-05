@@ -17,7 +17,8 @@ seqio.SentencePieceVocabulary.extra_ids = 100
 
 # Pretrain from T5 vocab
 #INITIAL_CHECKPOINT_PATH = "gs://t5-data/pretrained_models/t5x/t5_1_1_large/checkpoint_1000000"
-INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_2000000"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_2000000"
+INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_5563000/"
 MIXTURE_OR_TASK_NAME = "extended_span_corruption_pretrain_scandi_unigram"
 TASK_FEATURE_LENGTHS = {"inputs": 512, "targets": 512}
 # TRAIN_STEPS = 2000000

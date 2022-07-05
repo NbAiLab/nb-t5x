@@ -12,7 +12,7 @@ Lists of checkpoints can be found:
 - https://console.cloud.google.com/storage/browser/t5-data
 - https://console.cloud.google.com/storage/browser/scenic-bucket
 
-If meeting segmentation faults when writing checkpoints to the buckets, the reasone might be `tensorstore` version `0.1.18`. As a temporal fix, try using version `0.1.14` instead. Fixed in newer versions of `tensorstore`.
+If meeting segmentation faults when writing checkpoints to the buckets, the reasone might be `tensorstore` version `0.1.18`. As a temporal fix, try using version `0.1.14` instead. Fixed in newer versions of `tensorstore`. See also https://github.com/google-research/t5x/issues/436 if JAX cannot see the TPUs.
 
 ## Vocabs
 The folder vocabs contains useful information to create SentencePiece vocabularies.

@@ -221,7 +221,7 @@ TaskRegistry.add(
 
 # Final pretraining task used in Raffel et al., 2019 adaptated to NCC
 dataset_name = 'NbAiLab/nbailab_extended'
-dataset_params = {"path": dataset_name, "use_auth_token": True, "streaming": True, "skip": 5_000_000}
+dataset_params = {"path": dataset_name, "use_auth_token": True, "streaming": True, "skip": 100_000_000}
 dataset_shapes = None
 vocabulary = seqio.SentencePieceVocabulary("gs://nb-t5/t5/vocabs/wikipedia/no-da-en-sv-nn-is_32000_unigram.sp.model", extra_ids=100)
 TaskRegistry.add(

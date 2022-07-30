@@ -22,7 +22,8 @@ INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/che
 MIXTURE_OR_TASK_NAME = "extended_span_corruption_pretrain_scandi_unigram"
 TASK_FEATURE_LENGTHS = {"inputs": 512, "targets": 512}
 # TRAIN_STEPS = 2000000
-TRAIN_STEPS = 22000000  # Original 2000000 (1M over t5_1_1 1M large chekpoint). Let's try 20M (it should be 32 (2048/64) but it might overfit)
+#TRAIN_STEPS = 22000000  # Original 2000000 (1M over t5_1_1 1M large chekpoint). Let's try 20M (it should be 32 (2048/64) but it might overfit)
+TRAIN_STEPS = 12000000  # Previous calculation was wrong. Batch size is 64 per core, so times 8 → 2048/ (64 * 8) = 4M steps. Let's do 12 and finish there.
 
 DROPOUT_RATE = 0.0
 BATCH_SIZE = 64 # Default to 128. Oringal was trained on bs 2048 sq 512 for 1M steps up to 1T tokens

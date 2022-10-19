@@ -18,12 +18,21 @@ seqio.SentencePieceVocabulary.extra_ids = 100
 # Pretrain from T5 vocab
 #INITIAL_CHECKPOINT_PATH = "gs://t5-data/pretrained_models/t5x/t5_1_1_large/checkpoint_1000000"
 #INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_2000000"
-INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_5563000/"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_8055000/"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_11215000/"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_13660000/"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_13735000/"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_13805000/"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_13930000/"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_14030000/"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_14110000/"
+INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram/checkpoint_14330000/"
+
 MIXTURE_OR_TASK_NAME = "extended_span_corruption_pretrain_scandi_unigram"
 TASK_FEATURE_LENGTHS = {"inputs": 512, "targets": 512}
 # TRAIN_STEPS = 2000000
 #TRAIN_STEPS = 22000000  # Original 2000000 (1M over t5_1_1 1M large chekpoint). Let's try 20M (it should be 32 (2048/64) but it might overfit)
-TRAIN_STEPS = 12000000  # Previous calculation was wrong. Batch size is 64 per core, so times 8 → 2048/ (64 * 8) = 4M steps. Let's do 12 and finish there.
+TRAIN_STEPS = 17000000  # Previous calculation was wrong. Batch size is 64 per core, so times 8 → 2048/ (64 * 8) = 4M steps. Let's do 16M and finish there.
 
 DROPOUT_RATE = 0.0
 BATCH_SIZE = 64 # Default to 128. Oringal was trained on bs 2048 sq 512 for 1M steps up to 1T tokens

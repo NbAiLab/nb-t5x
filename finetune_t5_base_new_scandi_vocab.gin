@@ -16,10 +16,15 @@ seqio.SentencePieceVocabulary.sentencepiece_model_file = "gs://nb-t5/t5/vocabs/w
 seqio.SentencePieceVocabulary.extra_ids = 100
 
 # Pretrain from T5 vocab
-INITIAL_CHECKPOINT_PATH = "gs://t5-data/pretrained_models/t5x/t5_1_1_base/checkpoint_1000000"
+#INITIAL_CHECKPOINT_PATH = "gs://t5-data/pretrained_models/t5x/t5_1_1_base/checkpoint_1000000"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_base_from_t5_scandi_unigram/checkpoint_2000000"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_base_from_t5_scandi_unigram/checkpoint_6097000"
+#INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_base_from_t5_scandi_unigram/checkpoint_7084000"
+INITIAL_CHECKPOINT_PATH = "gs://nb-t5/t5/t5_1_1_base_from_t5_scandi_unigram/checkpoint_10000000"
+
 MIXTURE_OR_TASK_NAME = "extended_span_corruption_pretrain_scandi_unigram"
 TASK_FEATURE_LENGTHS = {"inputs": 512, "targets": 512}
-TRAIN_STEPS = 2000000
+TRAIN_STEPS = 16000000  # Originall 2000000 (1M over t5_1_1 1M chekpoint). Let's try 10M (it should be 16 but it might overfit)
 DROPOUT_RATE = 0.0
-# BATCH_SIZE = 256
+#BATCH_SIZE = 128  # default. Oringal was trained on bs 2048 sq 512 for 1M steps up to 1T tokens
 NUM_EMBEDDINGS = 32128  # 128 * math.ceil((32000 + 100) / 128) for TPU efficiency

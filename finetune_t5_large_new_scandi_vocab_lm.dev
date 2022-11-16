@@ -1,0 +1,1 @@
+/data/venvt5/bin/tensorboard dev upload --logdir gs://nb-t5/t5/t5_1_1_large_from_t5_scandi_unigram_lm --name "T5X t5_1_1-large nbailab_extended LM head, T5 cc_en vocab → Wikipedia scandi unigram 32k vocab" --description "$(hostname)"

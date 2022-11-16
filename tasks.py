@@ -47,9 +47,14 @@ def dataset_fn(split, shuffle_files, seed=None, dataset_params=None):
 
 
 @utils.map_over_dataset
-def target_to_key(x, key_map, target_key):
+def target_to_key(x, key_map, target_keys):
     """Assign the value from the dataset to target_key in key_map"""
-    return {**key_map, target_key: x}
+    if not isinstance(target_keys, (list, tuple)):
+        target_keys = [target_keys]
+    new_map = {**key_map}
+    for target_key in target_keys:
+        new_map[target_key] = x
+    return new_map
 
 
 # Final pretraining task used in Raffel et al., 2019 adaptated to NCC
@@ -69,7 +74,7 @@ TaskRegistry.add(
             target_to_key, key_map={
                 "inputs": None,
                 "targets": None,
-            }, target_key="targets"),
+            }, target_keys="targets"),
         seqio.preprocessors.tokenize,
         # seqio.CacheDatasetPlaceholder(),
         preprocessors.span_corruption,
@@ -96,7 +101,7 @@ TaskRegistry.add(
             target_to_key, key_map={
                 "inputs": None,
                 "targets": None,
-            }, target_key="targets"),
+            }, target_keys="targets"),
         seqio.preprocessors.tokenize,
         # seqio.CacheDatasetPlaceholder(),
         preprocessors.span_corruption,
@@ -124,7 +129,7 @@ TaskRegistry.add(
             target_to_key, key_map={
                 "inputs": None,
                 "targets": None,
-            }, target_key="targets"),
+            }, target_keys="targets"),
         seqio.preprocessors.tokenize,
         # seqio.CacheDatasetPlaceholder(),
         preprocessors.span_corruption, 
@@ -152,7 +157,7 @@ TaskRegistry.add(
             target_to_key, key_map={
                 "inputs": None,
                 "targets": None,
-            }, target_key="targets"),
+            }, target_keys="targets"),
         seqio.preprocessors.tokenize,
         # seqio.CacheDatasetPlaceholder(),
         preprocessors.span_corruption,
@@ -180,7 +185,7 @@ TaskRegistry.add(
             target_to_key, key_map={
                 "inputs": None,
                 "targets": None,
-            }, target_key="targets"),
+            }, target_keys="targets"),
         seqio.preprocessors.tokenize,
         # seqio.CacheDatasetPlaceholder(),
         preprocessors.span_corruption,
@@ -208,7 +213,7 @@ TaskRegistry.add(
             target_to_key, key_map={
                 "inputs": None,
                 "targets": None,
-            }, target_key="targets"),
+            }, target_keys="targets"),
         seqio.preprocessors.tokenize,
         # seqio.CacheDatasetPlaceholder(),
         preprocessors.span_corruption,
@@ -237,7 +242,7 @@ TaskRegistry.add(
             target_to_key, key_map={
                 "inputs": None,
                 "targets": None,
-            }, target_key="targets"),
+            }, target_keys="targets"),
         seqio.preprocessors.tokenize,
         # seqio.CacheDatasetPlaceholder(),
         preprocessors.span_corruption,
@@ -246,3 +251,39 @@ TaskRegistry.add(
     output_features={"targets": seqio.Feature(vocabulary=vocabulary, add_eos=True)},
     metric_fns=[]
 )
+
+
+# Prefix language modeling pretraining task used in Raffel et al., 2019. adapted to NCC
+dataset_name = 'NbAiLab/nbailab_extended'
+dataset_params = {"path": dataset_name, "use_auth_token": True, "streaming": True, "skip": 0}
+dataset_shapes = None
+vocabulary = seqio.SentencePieceVocabulary("gs://nb-t5/t5/vocabs/wikipedia/no-da-en-sv-nn-is_32000_unigram.sp.model", extra_ids=100)
+TaskRegistry.add(
+    "extended_prefix_lm_scandi_unigram",
+    source=seqio.FunctionDataSource(
+        dataset_fn=functools.partial(dataset_fn, dataset_params=dataset_params),
+        splits=("train", "validation"),
+        caching_permitted=False,
+        num_input_examples=dataset_shapes,
+    ),
+    preprocessors=[
+#        functools.partial(
+#            preprocessors.rekey, key_map={
+#                "inputs": None,
+#                "targets": "text"
+#            }),
+        functools.partial(
+            target_to_key, key_map={
+                "inputs": None,
+                "targets": None,
+            }, target_keys=["inputs", "targets"]),
+        seqio.preprocessors.tokenize,
+        # seqio.CacheDatasetPlaceholder(),
+        preprocessors.prefix_lm,
+        seqio.preprocessors.append_eos_after_trim,
+    ],
+    output_features={
+        "inputs": seqio.Feature(vocabulary=vocabulary, add_eos=True, required=False),
+        "targets": seqio.Feature(vocabulary=vocabulary, add_eos=True),
+    },
+    metric_fns=[])
